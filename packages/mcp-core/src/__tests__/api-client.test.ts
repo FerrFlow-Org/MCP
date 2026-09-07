@@ -1,16 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { apiRequest, UnauthorizedError } from '../api-client.js';
+import { apiRequest, UnauthorizedError, UntrustedApiHostError } from '../api-client.js';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
-const clearPersistedTokenMock = vi.fn();
-const clearTokenCacheMock = vi.fn();
-vi.mock('../auth/persistence.js', () => ({
-  clearPersistedToken: () => clearPersistedTokenMock(),
-}));
+const invalidateTokenMock = vi.fn<(token: string) => Promise<boolean>>();
 vi.mock('../auth/index.js', () => ({
-  clearTokenCache: () => clearTokenCacheMock(),
+  invalidateToken: (token: string) => invalidateTokenMock(token),
 }));
 
 function makeResponse(body: unknown, status = 200): Response {
@@ -26,8 +22,9 @@ function makeResponse(body: unknown, status = 200): Response {
 describe('apiRequest', () => {
   beforeEach(() => {
     mockFetch.mockReset();
-    clearPersistedTokenMock.mockReset();
-    clearTokenCacheMock.mockReset();
+    invalidateTokenMock.mockReset();
+    invalidateTokenMock.mockResolvedValue(true);
+    delete process.env.FERRLABS_MCP_ALLOWED_API_HOSTS;
   });
 
   it('sends extra headers alongside the defaults', async () => {
@@ -89,17 +86,69 @@ describe('apiRequest', () => {
     expect(init.body).toBe(JSON.stringify({ name: 'ci', scopes: ['*'] }));
   });
 
-  it('clears persisted token and cache on 401 with a token', async () => {
+  it('hands the rejected token to invalidateToken on a 401', async () => {
     mockFetch.mockResolvedValue(makeResponse({ error: 'unauthorized' }, 401));
     await expect(apiRequest('/orgs', { token: 'stale' })).rejects.toBeInstanceOf(UnauthorizedError);
-    expect(clearPersistedTokenMock).toHaveBeenCalledOnce();
-    expect(clearTokenCacheMock).toHaveBeenCalledOnce();
+    expect(invalidateTokenMock).toHaveBeenCalledWith('stale');
   });
 
-  it('does not clear persisted token on 401 without a token', async () => {
+  it('says nothing was cleared when the token did not come from the file', async () => {
+    invalidateTokenMock.mockResolvedValue(false);
+    mockFetch.mockResolvedValue(makeResponse({ error: 'unauthorized' }, 401));
+    await expect(apiRequest('/orgs', { token: 'from-env' })).rejects.toThrow(
+      /was not read from the token file/,
+    );
+  });
+
+  it('does not invalidate anything on a 401 without a token', async () => {
     mockFetch.mockResolvedValue(makeResponse({ error: 'unauthorized' }, 401));
     await expect(apiRequest('/orgs')).rejects.toThrow('unauthorized');
-    expect(clearPersistedTokenMock).not.toHaveBeenCalled();
-    expect(clearTokenCacheMock).not.toHaveBeenCalled();
+    expect(invalidateTokenMock).not.toHaveBeenCalled();
+  });
+
+  it('refuses to send a token to a host outside the allowlist', async () => {
+    await expect(
+      apiRequest('/orgs', { token: 'secret', baseUrl: 'https://evil.example.com' }),
+    ).rejects.toBeInstanceOf(UntrustedApiHostError);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('refuses to send a token in clear over http to a remote host', async () => {
+    await expect(
+      apiRequest('/orgs', { token: 'secret', baseUrl: 'http://api.ferrtrack.com' }),
+    ).rejects.toThrow(/in clear/);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('allows an unlisted host once FERRLABS_MCP_ALLOWED_API_HOSTS names it', async () => {
+    process.env.FERRLABS_MCP_ALLOWED_API_HOSTS = 'api.selfhosted.example';
+    mockFetch.mockResolvedValue(makeResponse({ ok: true }));
+    await apiRequest('/orgs', { token: 'secret', baseUrl: 'https://api.selfhosted.example' });
+    expect(mockFetch).toHaveBeenCalledOnce();
+  });
+
+  it('allows a loopback base URL over http for local development', async () => {
+    mockFetch.mockResolvedValue(makeResponse({ ok: true }));
+    await apiRequest('/orgs', { token: 'secret', baseUrl: 'http://127.0.0.1:3000' });
+    expect(mockFetch).toHaveBeenCalledOnce();
+  });
+
+  it('does not gate an unauthenticated call on the host allowlist', async () => {
+    mockFetch.mockResolvedValue(makeResponse({ ok: true }));
+    await apiRequest('/stats', { baseUrl: 'https://anything.example.com' });
+    expect(mockFetch).toHaveBeenCalledOnce();
+  });
+
+  it('asks fetch not to follow redirects', async () => {
+    mockFetch.mockResolvedValue(makeResponse({ ok: true }));
+    await apiRequest('/orgs', { token: 'secret' });
+    expect(mockFetch.mock.calls[0][1].redirect).toBe('manual');
+  });
+
+  it('refuses a redirect rather than walking the credential to Location', async () => {
+    mockFetch.mockResolvedValue(makeResponse(undefined, 302));
+    await expect(apiRequest('/orgs', { token: 'secret' })).rejects.toBeInstanceOf(
+      UntrustedApiHostError,
+    );
   });
 });

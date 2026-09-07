@@ -44,3 +44,62 @@ describe('getToken', () => {
     expect(a).toBe('fl_cached');
   });
 });
+
+describe('invalidateToken', () => {
+  const originalEnv = process.env;
+  const clearPersistedTokenMock = vi.fn();
+
+  beforeEach(() => {
+    vi.resetModules();
+    clearPersistedTokenMock.mockReset();
+    process.env = { ...originalEnv };
+    delete process.env.FERRLABS_API_TOKEN;
+    delete process.env.FERRFLOW_API_TOKEN;
+    delete process.env.FERRLABS_MCP_MODE;
+    vi.doMock('../persistence.js', () => ({
+      clearPersistedToken: () => clearPersistedTokenMock(),
+      readPersistedToken: () => Promise.resolve('fl_from_file'),
+      writePersistedToken: () => Promise.resolve(),
+    }));
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    vi.doUnmock('../persistence.js');
+  });
+
+  it('deletes the token file when the rejected token came from it', async () => {
+    const { getToken, invalidateToken } = await import('../index.js');
+    const token = await getToken();
+    expect(token).toBe('fl_from_file');
+
+    await expect(invalidateToken(token)).resolves.toBe(true);
+    expect(clearPersistedTokenMock).toHaveBeenCalledOnce();
+  });
+
+  it('leaves the token file alone when the rejected token came from the environment', async () => {
+    process.env.FERRLABS_API_TOKEN = 'fl_from_env';
+    const { getToken, invalidateToken } = await import('../index.js');
+    const token = await getToken();
+
+    await expect(invalidateToken(token)).resolves.toBe(false);
+    expect(clearPersistedTokenMock).not.toHaveBeenCalled();
+  });
+
+  it('ignores a token this process never cached, so one bad bearer cannot wipe the file', async () => {
+    const { getToken, invalidateToken } = await import('../index.js');
+    await getToken();
+
+    await expect(invalidateToken('someone-elses-bearer')).resolves.toBe(false);
+    expect(clearPersistedTokenMock).not.toHaveBeenCalled();
+  });
+
+  it('drops the cache so the next call re-reads the source', async () => {
+    const { getToken, invalidateToken } = await import('../index.js');
+    const first = await getToken();
+    await invalidateToken(first);
+
+    process.env.FERRLABS_API_TOKEN = 'fl_replacement';
+    expect(await getToken()).toBe('fl_replacement');
+  });
+});
