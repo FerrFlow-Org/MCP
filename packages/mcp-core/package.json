@@ -1,6 +1,6 @@
 {
   "name": "@ferrlabs/mcp-core",
-  "version": "8.0.4",
+  "version": "8.0.5",
   "description": "Shared core for FerrLabs MCP servers â€” auth, transports (stdio + Streamable HTTP), api-client, runner",
   "license": "MPL-2.0",
   "type": "module",

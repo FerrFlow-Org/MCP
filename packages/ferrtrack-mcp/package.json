@@ -1,6 +1,6 @@
 {
   "name": "@ferrtrack/mcp",
-  "version": "8.0.4",
+  "version": "8.0.5",
   "description": "Model Context Protocol server for FerrTrack â€” issues, labels, comments",
   "license": "MPL-2.0",
   "type": "module",

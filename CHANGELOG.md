@@ -4,6 +4,12 @@ All notable changes to `mcp` will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [8.0.5] - 2026-09-07
+
+### Bug Fixes
+
+- fix(core): release the listener and the per-request server both transports leaked (#333)
+
 ## [8.0.4] - 2026-09-07
 
 ### Bug Fixes
