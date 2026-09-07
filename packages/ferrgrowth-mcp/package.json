@@ -1,6 +1,6 @@
 {
   "name": "@ferrgrowth/mcp",
-  "version": "8.0.5",
+  "version": "8.0.6",
   "description": "Model Context Protocol server for FerrGrowth â€” sites, pages, forms, audits",
   "license": "MPL-2.0",
   "type": "module",

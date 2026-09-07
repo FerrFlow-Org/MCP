@@ -4,6 +4,12 @@ All notable changes to `mcp` will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [8.0.6] - 2026-09-07
+
+### Bug Fixes
+
+- fix(mcp): refuse to mint an API token unless the operator opted into the transcript exposure (#334)
+
 ## [8.0.5] - 2026-09-07
 
 ### Bug Fixes
