@@ -51,6 +51,11 @@ interface CallbackResult {
 interface BoundListener {
   port: number;
   callback: Promise<CallbackResult>;
+  /**
+   * Release the port. Safe to call more than once, and on a listener that
+   * already served its callback.
+   */
+  close: () => void;
 }
 
 /**
@@ -103,6 +108,17 @@ function bindCallbackListener(port: number, expectedState: string): Promise<Boun
       }
     });
 
+    let closed = false;
+    const close = () => {
+      if (closed) return;
+      closed = true;
+      // `close()` alone waits for open sockets, and a browser that kept the
+      // connection alive never yields one, so drop them first. Defensive:
+      // the tests cover the release, not this specific path.
+      server.closeAllConnections();
+      server.close();
+    };
+
     const onBindError = (err: Error) => {
       server.removeListener('listening', onListening);
       rejectBound(err);
@@ -112,7 +128,7 @@ function bindCallbackListener(port: number, expectedState: string): Promise<Boun
       // Once bound successfully, route runtime errors into the callback
       // promise (e.g. unexpected close after we've started serving).
       server.on('error', (err) => rejectCallback(err));
-      resolveBound({ port, callback });
+      resolveBound({ port, callback, close });
     };
 
     server.once('error', onBindError);
@@ -180,7 +196,7 @@ export async function runLoopbackOauthFlow(): Promise<RunLoopbackFlowResult> {
       `Could not bind any of the loopback ports (${REDIRECT_PORTS.join(', ')}). ${detail}. Close whatever is holding the ports (commonly an MCP subprocess from another Claude session stuck in OAuth), then retry.`,
     );
   }
-  const { port, callback: callbackPromise } = bound;
+  const { port, callback: callbackPromise, close } = bound;
 
   const redirectUri = `http://127.0.0.1:${port}/cb`;
   const authorizeUrl = new URL(`${AUTH_BASE}/authorize`);
@@ -193,8 +209,9 @@ export async function runLoopbackOauthFlow(): Promise<RunLoopbackFlowResult> {
 
   openBrowser(authorizeUrl.toString());
 
+  let timer: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(
+    timer = setTimeout(
       () =>
         reject(
           new Error(
@@ -205,7 +222,16 @@ export async function runLoopbackOauthFlow(): Promise<RunLoopbackFlowResult> {
     );
   });
 
-  const { code } = await Promise.race([callbackPromise, timeoutPromise]);
-  const token = await exchangeCodeForToken(code, pkce.verifier, redirectUri);
-  return { token };
+  try {
+    const { code } = await Promise.race([callbackPromise, timeoutPromise]);
+    const token = await exchangeCodeForToken(code, pkce.verifier, redirectUri);
+    return { token };
+  } finally {
+    // Every exit closes the listener: a timeout, a CSRF mismatch, a failed
+    // exchange, and the happy path. Leaving it bound is what holds ports
+    // 54321/54322 until the process dies, which is the failure the bind
+    // error above tells the user to go and clear by hand.
+    clearTimeout(timer);
+    close();
+  }
 }
