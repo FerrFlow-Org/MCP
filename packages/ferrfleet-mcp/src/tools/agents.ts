@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { fleetRequest } from '../api-base.js';
 
 interface Agent {
@@ -21,7 +21,7 @@ export function registerAgentTools(server: McpServer) {
       const token = await getToken();
       const agents = await fleetRequest<Agent[]>('/agents', { token });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(agents, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(agents) }],
       };
     },
   );
@@ -36,7 +36,7 @@ export function registerAgentTools(server: McpServer) {
       const token = await getToken();
       const agent = await fleetRequest<Agent>(`/agents/${encodeURIComponent(agent_id)}`, { token });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(agent, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(agent) }],
       };
     },
   );
@@ -67,7 +67,7 @@ export function registerAgentTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(run, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(run) }],
       };
     },
   );

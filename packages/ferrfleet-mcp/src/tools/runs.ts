@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { fleetRequest } from '../api-base.js';
 
 interface Run {
@@ -30,7 +30,7 @@ export function registerRunTools(server: McpServer) {
       const qs = limit !== undefined ? `?limit=${limit}` : '';
       const runs = await fleetRequest<Run[]>(`/runs${qs}`, { token });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(runs, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(runs) }],
       };
     },
   );
@@ -45,7 +45,7 @@ export function registerRunTools(server: McpServer) {
       const token = await getToken();
       const run = await fleetRequest<Run>(`/runs/${encodeURIComponent(run_id)}`, { token });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(run, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(run) }],
       };
     },
   );
@@ -63,7 +63,15 @@ export function registerRunTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(transcript, null, 2) }],
+        content: [
+          {
+            type: 'text' as const,
+            text: toToolText(transcript, {
+              narrowWith:
+                'Use get_run first to confirm the run is worth reading; a long run cannot be returned whole.',
+            }),
+          },
+        ],
       };
     },
   );

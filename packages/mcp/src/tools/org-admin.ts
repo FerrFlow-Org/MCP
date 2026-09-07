@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest, getToken } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, toToolText } from '@ferrlabs/mcp-core';
 
 interface Org {
   id: string;
@@ -72,7 +72,7 @@ export function registerOrgAdminTools(server: McpServer) {
     async ({ org_slug }) => {
       const token = await getToken();
       const org = await apiRequest<Org>(orgBase(org_slug), { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(org, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(org) }] };
     },
   );
 
@@ -100,7 +100,7 @@ export function registerOrgAdminTools(server: McpServer) {
         method: 'PATCH',
         body,
       });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(org, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(org) }] };
     },
   );
 
@@ -113,7 +113,7 @@ export function registerOrgAdminTools(server: McpServer) {
     async ({ org_slug }) => {
       const token = await getToken();
       const overview = await apiRequest<OrgOverview>(`${orgBase(org_slug)}/overview`, { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(overview, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(overview) }] };
     },
   );
 
@@ -126,7 +126,7 @@ export function registerOrgAdminTools(server: McpServer) {
     async ({ org_slug }) => {
       const token = await getToken();
       const usage = await apiRequest<OrgUsage>(`${orgBase(org_slug)}/usage`, { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(usage, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(usage) }] };
     },
   );
 
@@ -147,7 +147,14 @@ export function registerOrgAdminTools(server: McpServer) {
       const token = await getToken();
       const qs = limit !== undefined ? `?limit=${limit}` : '';
       const entries = await apiRequest<AuditEntry[]>(`${orgBase(org_slug)}/audit${qs}`, { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(entries, null, 2) }] };
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: toToolText(entries, { narrowWith: 'Pass a smaller limit.' }),
+          },
+        ],
+      };
     },
   );
 
@@ -164,7 +171,7 @@ export function registerOrgAdminTools(server: McpServer) {
     async ({ org_slug }) => {
       const token = await getToken();
       const members = await apiRequest<OrgMember[]>(`${orgBase(org_slug)}/members`, { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(members, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(members) }] };
     },
   );
 
@@ -188,7 +195,7 @@ export function registerOrgAdminTools(server: McpServer) {
         method: 'POST',
         body: { email, role },
       });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(member, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(member) }] };
     },
   );
 
@@ -206,7 +213,7 @@ export function registerOrgAdminTools(server: McpServer) {
         `${orgBase(org_slug)}/members/${encodeURIComponent(user_id)}`,
         { token, method: 'PATCH', body: { role } },
       );
-      return { content: [{ type: 'text' as const, text: JSON.stringify(member, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(member) }] };
     },
   );
 
@@ -242,7 +249,7 @@ export function registerOrgAdminTools(server: McpServer) {
     async ({ org_slug }) => {
       const token = await getToken();
       const teams = await apiRequest<Team[]>(`${orgBase(org_slug)}/teams`, { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(teams, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(teams) }] };
     },
   );
 
@@ -261,7 +268,7 @@ export function registerOrgAdminTools(server: McpServer) {
         method: 'POST',
         body: { name, description: description ?? null },
       });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(team, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(team) }] };
     },
   );
 
@@ -284,7 +291,7 @@ export function registerOrgAdminTools(server: McpServer) {
         `${orgBase(org_slug)}/teams/${encodeURIComponent(team_id)}`,
         { token, method: 'PATCH', body },
       );
-      return { content: [{ type: 'text' as const, text: JSON.stringify(team, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(team) }] };
     },
   );
 
@@ -319,7 +326,7 @@ export function registerOrgAdminTools(server: McpServer) {
         `${orgBase(org_slug)}/teams/${encodeURIComponent(team_id)}/members`,
         { token, method: 'POST', body: { user_id } },
       );
-      return { content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(result) }] };
     },
   );
 

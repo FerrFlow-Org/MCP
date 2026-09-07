@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest } from '@ferrlabs/mcp-core';
+import { apiRequest, toToolText } from '@ferrlabs/mcp-core';
 import { getToken } from '@ferrlabs/mcp-core';
 
 interface SubscriptionRow {
@@ -29,7 +29,7 @@ export function registerSubscriptionsTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(subs, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(subs) }],
       };
     },
   );
@@ -51,7 +51,7 @@ export function registerSubscriptionsTools(server: McpServer) {
         `/orgs/${encodeURIComponent(org_slug)}/subscriptions`,
         { token, method: 'POST', body: { product, tier } },
       );
-      return { content: [{ type: 'text' as const, text: JSON.stringify(sub, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(sub) }] };
     },
   );
 
@@ -69,7 +69,7 @@ export function registerSubscriptionsTools(server: McpServer) {
         `/orgs/${encodeURIComponent(org_slug)}/subscriptions/${encodeURIComponent(product)}`,
         { token, method: 'PATCH', body: { tier } },
       );
-      return { content: [{ type: 'text' as const, text: JSON.stringify(sub, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(sub) }] };
     },
   );
 

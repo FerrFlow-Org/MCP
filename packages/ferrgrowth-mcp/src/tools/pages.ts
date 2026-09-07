@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { GROWTH_API_URL } from '../api-base.js';
 
 interface Page {
@@ -26,7 +26,7 @@ export function registerPageTools(server: McpServer) {
         baseUrl: GROWTH_API_URL,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(pages, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(pages) }],
       };
     },
   );
@@ -45,7 +45,7 @@ export function registerPageTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(page, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(page) }],
       };
     },
   );
@@ -64,7 +64,7 @@ export function registerPageTools(server: McpServer) {
         { token, method: 'POST', baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(page, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(page) }],
       };
     },
   );
@@ -94,7 +94,7 @@ export function registerPageTools(server: McpServer) {
         body: { slug, title, content: content ?? '' },
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(page, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(page) }],
       };
     },
   );
@@ -127,7 +127,7 @@ export function registerPageTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL, method: 'PATCH', body },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(page, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(page) }],
       };
     },
   );
@@ -151,7 +151,7 @@ export function registerPageTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(result) }],
       };
     },
   );
@@ -184,7 +184,7 @@ export function registerPageTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(result) }],
       };
     },
   );

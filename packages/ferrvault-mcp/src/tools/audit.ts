@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 
 interface AuditEntry {
   id: string;
@@ -44,7 +44,12 @@ export function registerVaultAuditTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(entries, null, 2) }],
+        content: [
+          {
+            type: 'text' as const,
+            text: toToolText(entries, { narrowWith: 'Pass a smaller limit.' }),
+          },
+        ],
       };
     },
   );
@@ -64,7 +69,7 @@ export function registerVaultAuditTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(requests, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(requests) }],
       };
     },
   );

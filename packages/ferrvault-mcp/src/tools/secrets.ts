@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 
 interface SecretSummary {
   id: string;
@@ -30,7 +30,7 @@ export function registerSecretTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(secrets, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(secrets) }],
       };
     },
   );
@@ -56,7 +56,7 @@ export function registerSecretTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(secret, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(secret) }],
       };
     },
   );

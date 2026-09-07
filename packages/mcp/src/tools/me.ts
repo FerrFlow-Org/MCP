@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest, getToken } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, toToolText } from '@ferrlabs/mcp-core';
 
 interface MeProfile {
   id: string;
@@ -52,7 +52,7 @@ export function registerMeTools(server: McpServer) {
         method: 'PATCH',
         body,
       });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(me, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(me) }] };
     },
   );
 
@@ -63,7 +63,7 @@ export function registerMeTools(server: McpServer) {
     async () => {
       const token = await getToken();
       const sessions = await apiRequest<MeSession[]>('/me/sessions', { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(sessions, null, 2) }] };
+      return { content: [{ type: 'text' as const, text: toToolText(sessions) }] };
     },
   );
 
@@ -90,7 +90,16 @@ export function registerMeTools(server: McpServer) {
     async () => {
       const token = await getToken();
       const dump = await apiRequest<unknown>('/auth/me/export', { token });
-      return { content: [{ type: 'text' as const, text: JSON.stringify(dump, null, 2) }] };
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: toToolText(dump, {
+              narrowWith: 'Export the account from app.ferrlabs.com to get the bundle whole.',
+            }),
+          },
+        ],
+      };
     },
   );
 }

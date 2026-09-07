@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest } from '@ferrlabs/mcp-core';
+import { apiRequest, toToolText } from '@ferrlabs/mcp-core';
 import { getToken } from '@ferrlabs/mcp-core';
 
 interface IssueWithDetails {
@@ -48,7 +48,7 @@ export function registerIssuesTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(issues, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(issues) }],
       };
     },
   );

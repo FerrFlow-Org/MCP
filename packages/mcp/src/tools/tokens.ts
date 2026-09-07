@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest } from '@ferrlabs/mcp-core';
+import { apiRequest, toToolText } from '@ferrlabs/mcp-core';
 import { getToken } from '@ferrlabs/mcp-core';
 
 interface UserProfile {
@@ -35,7 +35,7 @@ export function registerTokenTools(server: McpServer) {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify(user, null, 2),
+          text: toToolText(user),
         },
       ],
     };
@@ -48,7 +48,7 @@ export function registerTokenTools(server: McpServer) {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify(tokens, null, 2),
+          text: toToolText(tokens),
         },
       ],
     };
@@ -97,7 +97,7 @@ export function registerTokenTools(server: McpServer) {
         content: [
           {
             type: 'text' as const,
-            text: `Token created: ${plaintext}\n\nThis is the only time the secret is shown, and it is now in this transcript. Move it to your secret store, then treat the transcript as sensitive or revoke the token with revoke_token.\n\n${JSON.stringify(meta, null, 2)}`,
+            text: `Token created: ${plaintext}\n\nThis is the only time the secret is shown, and it is now in this transcript. Move it to your secret store, then treat the transcript as sensitive or revoke the token with revoke_token.\n\n${toToolText(meta)}`,
           },
         ],
       };

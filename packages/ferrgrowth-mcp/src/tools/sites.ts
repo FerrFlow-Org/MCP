@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { GROWTH_API_URL } from '../api-base.js';
 
 interface Site {
@@ -21,7 +21,7 @@ export function registerSiteTools(server: McpServer) {
       const token = await getToken();
       const sites = await apiRequest<Site[]>('/v1/sites', { token, baseUrl: GROWTH_API_URL });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(sites, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(sites) }],
       };
     },
   );
@@ -39,7 +39,7 @@ export function registerSiteTools(server: McpServer) {
         baseUrl: GROWTH_API_URL,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(site, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(site) }],
       };
     },
   );
@@ -64,7 +64,7 @@ export function registerSiteTools(server: McpServer) {
         body: { slug, name },
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(site, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(site) }],
       };
     },
   );
@@ -95,7 +95,7 @@ export function registerSiteTools(server: McpServer) {
         body,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(site, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(site) }],
       };
     },
   );
@@ -139,7 +139,7 @@ export function registerSiteTools(server: McpServer) {
         body: { domain },
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(result) }],
       };
     },
   );
@@ -157,7 +157,7 @@ export function registerSiteTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL, method: 'POST' },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(result) }],
       };
     },
   );

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { TRACK_API_URL } from '../api-base.js';
 
 interface Comment {
@@ -25,7 +25,7 @@ export function registerCommentTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(comments, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(comments) }],
       };
     },
   );
@@ -44,7 +44,7 @@ export function registerCommentTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL, method: 'POST', body: { body } },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(comment, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(comment) }],
       };
     },
   );
@@ -64,7 +64,7 @@ export function registerCommentTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL, method: 'PATCH', body: { body } },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(comment, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(comment) }],
       };
     },
   );

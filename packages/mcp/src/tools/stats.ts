@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest } from '@ferrlabs/mcp-core';
+import { apiRequest, toToolText } from '@ferrlabs/mcp-core';
 
 interface PublicStats {
   total_releases: number;
@@ -25,7 +25,7 @@ export function registerStatsTools(server: McpServer) {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify(stats, null, 2),
+            text: toToolText(stats),
           },
         ],
       };
@@ -38,7 +38,7 @@ export function registerStatsTools(server: McpServer) {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify(health, null, 2),
+          text: toToolText(health),
         },
       ],
     };

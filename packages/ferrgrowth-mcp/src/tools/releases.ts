@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { GROWTH_API_URL } from '../api-base.js';
 
 interface Release {
@@ -26,7 +26,7 @@ export function registerReleaseTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(release, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(release) }],
       };
     },
   );
@@ -44,7 +44,7 @@ export function registerReleaseTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(releases, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(releases) }],
       };
     },
   );
@@ -63,7 +63,7 @@ export function registerReleaseTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL, method: 'POST' },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(release, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(release) }],
       };
     },
   );
