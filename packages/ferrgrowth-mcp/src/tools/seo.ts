@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { GROWTH_API_URL } from '../api-base.js';
 
 interface SeoOverview {
@@ -32,7 +32,7 @@ export function registerSeoTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(overview, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(overview) }],
       };
     },
   );
@@ -51,7 +51,7 @@ export function registerSeoTools(server: McpServer) {
         { token, method: 'POST', baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(result) }],
       };
     },
   );

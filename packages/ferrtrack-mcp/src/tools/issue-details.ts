@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { TRACK_API_URL } from '../api-base.js';
 
 interface IssueDetails {
@@ -33,7 +33,7 @@ export function registerIssueDetailsTool(server: McpServer) {
         baseUrl: TRACK_API_URL,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(issue, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(issue) }],
       };
     },
   );

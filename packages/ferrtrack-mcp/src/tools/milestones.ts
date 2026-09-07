@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { TRACK_API_URL } from '../api-base.js';
 
 interface Milestone {
@@ -27,7 +27,7 @@ export function registerMilestoneTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(milestone, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(milestone) }],
       };
     },
   );
@@ -45,7 +45,7 @@ export function registerMilestoneTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(milestones, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(milestones) }],
       };
     },
   );
@@ -75,7 +75,7 @@ export function registerMilestoneTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(milestone, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(milestone) }],
       };
     },
   );
@@ -101,7 +101,7 @@ export function registerMilestoneTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL, method: 'PATCH', body },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(milestone, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(milestone) }],
       };
     },
   );

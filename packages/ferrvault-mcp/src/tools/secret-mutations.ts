@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 
 interface SecretSummary {
   id: string;
@@ -42,7 +42,7 @@ export function registerSecretMutationTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(secret, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(secret) }],
       };
     },
   );
@@ -69,7 +69,7 @@ export function registerSecretMutationTools(server: McpServer) {
         { token, method: 'PATCH', body },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(secret, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(secret) }],
       };
     },
   );
@@ -112,7 +112,7 @@ export function registerSecretMutationTools(server: McpServer) {
         { token, method: 'POST', body: { value } },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(secret, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(secret) }],
       };
     },
   );

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { GROWTH_API_URL } from '../api-base.js';
 
 interface AnalyticsSummary {
@@ -34,7 +34,7 @@ export function registerAnalyticsTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(summary, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(summary) }],
       };
     },
   );

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { GROWTH_API_URL } from '../api-base.js';
 
 interface Form {
@@ -35,7 +35,7 @@ export function registerFormTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(form, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(form) }],
       };
     },
   );
@@ -53,7 +53,7 @@ export function registerFormTools(server: McpServer) {
         baseUrl: GROWTH_API_URL,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(forms, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(forms) }],
       };
     },
   );
@@ -80,7 +80,12 @@ export function registerFormTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(subs, null, 2) }],
+        content: [
+          {
+            type: 'text' as const,
+            text: toToolText(subs, { narrowWith: 'Pass a smaller limit.' }),
+          },
+        ],
       };
     },
   );
@@ -115,7 +120,7 @@ export function registerFormTools(server: McpServer) {
         body: { name, fields },
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(form, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(form) }],
       };
     },
   );
@@ -148,7 +153,7 @@ export function registerFormTools(server: McpServer) {
         { token, baseUrl: GROWTH_API_URL, method: 'PATCH', body },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(form, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(form) }],
       };
     },
   );

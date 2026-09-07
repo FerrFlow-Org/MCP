@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 
 interface VaultDetails {
   id: string;
@@ -26,7 +26,7 @@ export function registerVaultDetailsTool(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(vault, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(vault) }],
       };
     },
   );

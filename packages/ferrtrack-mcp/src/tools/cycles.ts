@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { TRACK_API_URL } from '../api-base.js';
 
 interface Cycle {
@@ -36,7 +36,7 @@ export function registerCycleTools(server: McpServer) {
         baseUrl: TRACK_API_URL,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(cycle, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(cycle) }],
       };
     },
   );
@@ -54,7 +54,7 @@ export function registerCycleTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(cycles, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(cycles) }],
       };
     },
   );
@@ -72,7 +72,7 @@ export function registerCycleTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(issues, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(issues) }],
       };
     },
   );
@@ -98,7 +98,7 @@ export function registerCycleTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(cycle, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(cycle) }],
       };
     },
   );
@@ -116,7 +116,7 @@ export function registerCycleTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL, method: 'POST' },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(cycle, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(cycle) }],
       };
     },
   );
@@ -144,7 +144,7 @@ export function registerCycleTools(server: McpServer) {
         body,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(cycle, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(cycle) }],
       };
     },
   );

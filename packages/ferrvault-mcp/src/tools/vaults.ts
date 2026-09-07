@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 
 interface VaultSummary {
   id: string;
@@ -31,7 +31,7 @@ export function registerVaultMutationTools(server: McpServer) {
         { token, method: 'POST', body: { name, description: description ?? null } },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(vault, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(vault) }],
       };
     },
   );
@@ -58,7 +58,7 @@ export function registerVaultMutationTools(server: McpServer) {
         body,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(vault, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(vault) }],
       };
     },
   );

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiRequest, getToken, type McpServer } from '@ferrlabs/mcp-core';
+import { apiRequest, getToken, type McpServer, toToolText } from '@ferrlabs/mcp-core';
 import { TRACK_API_URL } from '../api-base.js';
 
 interface Issue {
@@ -55,7 +55,7 @@ export function registerIssueTools(server: McpServer) {
         { token, baseUrl: TRACK_API_URL },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(issues, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(issues) }],
       };
     },
   );
@@ -92,7 +92,7 @@ export function registerIssueTools(server: McpServer) {
         },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(issue, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(issue) }],
       };
     },
   );
@@ -127,7 +127,7 @@ export function registerIssueTools(server: McpServer) {
         body,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(issue, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(issue) }],
       };
     },
   );
@@ -145,7 +145,7 @@ export function registerIssueTools(server: McpServer) {
         baseUrl: TRACK_API_URL,
       });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(links, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(links) }],
       };
     },
   );

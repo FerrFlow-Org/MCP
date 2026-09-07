@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { apiRequest } from '@ferrlabs/mcp-core';
+import { apiRequest, toToolText } from '@ferrlabs/mcp-core';
 import { getToken } from '@ferrlabs/mcp-core';
 
 interface OrgWithMemberCount {
@@ -29,7 +29,7 @@ export function registerOrgsTools(server: McpServer) {
       const token = await getToken();
       const orgs = await apiRequest<OrgWithMemberCount[]>('/orgs', { token });
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(orgs, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(orgs) }],
       };
     },
   );
@@ -47,7 +47,7 @@ export function registerOrgsTools(server: McpServer) {
         { token },
       );
       return {
-        content: [{ type: 'text' as const, text: JSON.stringify(projects, null, 2) }],
+        content: [{ type: 'text' as const, text: toToolText(projects) }],
       };
     },
   );
