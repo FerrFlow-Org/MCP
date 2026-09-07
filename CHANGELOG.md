@@ -4,6 +4,12 @@ All notable changes to `mcp` will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [8.1.0] - 2026-09-07
+
+### Features
+
+- feat(core): cap tool responses instead of dumping the whole payload into the context (#336)
+
 ## [8.0.6] - 2026-09-07
 
 ### Bug Fixes
