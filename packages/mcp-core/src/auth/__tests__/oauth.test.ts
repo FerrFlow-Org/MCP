@@ -70,3 +70,57 @@ describe('bindCallbackListener (port fallback)', () => {
     expect((settled as Error).message).toMatch(/state mismatch/);
   });
 });
+
+describe('bindCallbackListener (port release)', () => {
+  it('frees the port on close, so a later flow can bind it again', async () => {
+    const port = await freePort();
+
+    const first = await __testOnly.bindCallbackListener(port, 'st');
+    first.callback.catch(() => undefined);
+    expect(first.port).toBe(port);
+
+    first.close();
+
+    // Rebinding the same port is the only honest proof it was released:
+    // an unclosed listener makes this throw EADDRINUSE, which is the bug
+    // the flow's own error message told users to clear by hand.
+    const second = await __testOnly.bindCallbackListener(port, 'st');
+    second.callback.catch(() => undefined);
+    expect(second.port).toBe(port);
+    second.close();
+  });
+
+  it('tolerates close being called twice', async () => {
+    const port = await freePort();
+    const bound = await __testOnly.bindCallbackListener(port, 'st');
+    bound.callback.catch(() => undefined);
+
+    bound.close();
+    expect(() => bound.close()).not.toThrow();
+  });
+
+  it('releases the port after it has actually served a connection', async () => {
+    const { Agent, request } = await import('node:http');
+    const port = await freePort();
+    const bound = await __testOnly.bindCallbackListener(port, 'st');
+    bound.callback.catch(() => undefined);
+
+    const agent = new Agent({ keepAlive: true, maxSockets: 1 });
+    await new Promise<void>((resolve, reject) => {
+      const req = request({ host: '127.0.0.1', port, path: '/nope', agent }, (res) => {
+        res.resume();
+        res.on('end', () => resolve());
+      });
+      req.on('error', reject);
+      req.end();
+    });
+
+    bound.close();
+
+    const again = await __testOnly.bindCallbackListener(port, 'st');
+    again.callback.catch(() => undefined);
+    expect(again.port).toBe(port);
+    again.close();
+    agent.destroy();
+  });
+});

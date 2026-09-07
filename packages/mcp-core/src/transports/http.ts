@@ -183,6 +183,12 @@ export async function startHttpServer(opts: HttpServerOptions): Promise<void> {
       return;
     }
 
+    // In stateless mode nothing ever retains what we build here, so the pair
+    // has to be torn down once the response is written. Left alone, every
+    // request adds an McpServer and a transport that live until the process
+    // does.
+    let disposable: { server: McpServer; transport: StreamableHTTPServerTransport } | undefined;
+
     if (!transport) {
       let createdSessionId: string | undefined;
       transport = new StreamableHTTPServerTransport({
@@ -199,10 +205,18 @@ export async function startHttpServer(opts: HttpServerOptions): Promise<void> {
       };
       const server = opts.createServer();
       await server.connect(transport);
+      if (stateless) disposable = { server, transport };
     }
 
     const body = await readJsonBody(req);
-    await runWithAuthContext({ bearerToken }, () => transport.handleRequest(req, res, body));
+    try {
+      await runWithAuthContext({ bearerToken }, () => transport.handleRequest(req, res, body));
+    } finally {
+      if (disposable) {
+        await disposable.transport.close().catch(() => undefined);
+        await disposable.server.close().catch(() => undefined);
+      }
+    }
   }
 
   function applyCorsHeaders(req: IncomingMessage, res: ServerResponse): void {
