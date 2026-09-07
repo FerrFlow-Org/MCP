@@ -148,22 +148,23 @@ FerrFlow CLI-specific tools (`dry_run`, `validate_config`, `read_config`, `read_
 
 ## Configuration
 
-| Variable                  | Description                                                                           | Default                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `API_URL`                 | FerrLabs API base URL (no `/v1` suffix, paths are prefixed in code)                   | `https://api.ferrlabs.com`                                                |
-| `FERRLABS_AUTH_URL`       | Auth SPA base URL (where the OAuth browser flow lands)                                | `https://auth.ferrlabs.com`                                               |
-| `FERRLABS_API_TOKEN`      | Pre-provisioned token. Bypasses the OAuth flow. Use for CI / scripted environments.   | _(unset)_                                                                 |
-| `FERRFLOW_API_TOKEN`      | **Deprecated**, accepted as a fallback for backward compatibility with v3.x.          | _(unset)_                                                                 |
-| `FERRLABS_MCP_NO_OAUTH`   | Set to `1` to disable the OAuth fallback. Then `FERRLABS_API_TOKEN` becomes required. | unset                                                                     |
-| `FERRLABS_MCP_TOKEN_PATH` | Override the path where the OAuth-acquired token is persisted.                        | `%APPDATA%\ferrlabs\mcp\token.json` / `~/.config/ferrlabs/mcp/token.json` |
-| `FERRLABS_MCP_NO_PERSIST` | Set to `1` to keep the token in memory only (re-auth on every cold start).            | unset                                                                     |
-| `FERRTRACK_API_URL`       | Base URL for the FerrTrack API (`@ferrtrack/mcp`).                                    | `https://api.ferrtrack.com`                                               |
-| `FERRGROWTH_API_URL`      | Base URL for the FerrGrowth API (`@ferrgrowth/mcp`).                                  | `https://api.ferrgrowth.com`                                              |
-| `FERRFLEET_API_URL`       | Base URL for the FerrFleet API (`@ferrfleet/mcp`).                                    | `https://api.ferrfleet.com`                                               |
-| `FERRFLEET_API_VERSION`   | Contract version sent as `x-ferrfleet-api-version` by `@ferrfleet/mcp`.               | `2026-08-04`                                                              |
-| `FERRLABS_MCP_MODE`       | Transport: `stdio` (default) or `http` (Streamable HTTP). `--http` also selects http. | `stdio`                                                                   |
-| `PORT`                    | Port for the HTTP transport (`FERRLABS_MCP_MODE=http`).                               | `3000`                                                                    |
-| `HOST`                    | Bind address for the HTTP transport.                                                  | `0.0.0.0`                                                                 |
+| Variable                         | Description                                                                                                                                                  | Default                                                                   |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `API_URL`                        | FerrLabs API base URL (no `/v1` suffix, paths are prefixed in code)                                                                                          | `https://api.ferrlabs.com`                                                |
+| `FERRLABS_AUTH_URL`              | Auth SPA base URL (where the OAuth browser flow lands)                                                                                                       | `https://auth.ferrlabs.com`                                               |
+| `FERRLABS_API_TOKEN`             | Pre-provisioned token. Bypasses the OAuth flow. Use for CI / scripted environments.                                                                          | _(unset)_                                                                 |
+| `FERRFLOW_API_TOKEN`             | **Deprecated**, accepted as a fallback for backward compatibility with v3.x.                                                                                 | _(unset)_                                                                 |
+| `FERRLABS_MCP_NO_OAUTH`          | Set to `1` to disable the OAuth fallback. Then `FERRLABS_API_TOKEN` becomes required.                                                                        | unset                                                                     |
+| `FERRLABS_MCP_TOKEN_PATH`        | Override the path where the OAuth-acquired token is persisted.                                                                                               | `%APPDATA%\ferrlabs\mcp\token.json` / `~/.config/ferrlabs/mcp/token.json` |
+| `FERRLABS_MCP_NO_PERSIST`        | Set to `1` to keep the token in memory only (re-auth on every cold start).                                                                                   | unset                                                                     |
+| `FERRLABS_MCP_ALLOWED_API_HOSTS` | Extra hosts a token may be sent to, comma separated. The FerrLabs product APIs are allowed by default; anything else is refused. Loopback is always allowed. | —                                                                         |
+| `FERRTRACK_API_URL`              | Base URL for the FerrTrack API (`@ferrtrack/mcp`).                                                                                                           | `https://api.ferrtrack.com`                                               |
+| `FERRGROWTH_API_URL`             | Base URL for the FerrGrowth API (`@ferrgrowth/mcp`).                                                                                                         | `https://api.ferrgrowth.com`                                              |
+| `FERRFLEET_API_URL`              | Base URL for the FerrFleet API (`@ferrfleet/mcp`).                                                                                                           | `https://api.ferrfleet.com`                                               |
+| `FERRFLEET_API_VERSION`          | Contract version sent as `x-ferrfleet-api-version` by `@ferrfleet/mcp`.                                                                                      | `2026-08-04`                                                              |
+| `FERRLABS_MCP_MODE`              | Transport: `stdio` (default) or `http` (Streamable HTTP). `--http` also selects http.                                                                        | `stdio`                                                                   |
+| `PORT`                           | Port for the HTTP transport (`FERRLABS_MCP_MODE=http`).                                                                                                      | `3000`                                                                    |
+| `HOST`                           | Bind address for the HTTP transport.                                                                                                                         | `0.0.0.0`                                                                 |
 
 ### HTTP transport
 
