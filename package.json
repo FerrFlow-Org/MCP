@@ -1,7 +1,7 @@
 {
   "name": "@ferrlabs/mcp-monorepo",
   "private": true,
-  "version": "8.0.3",
+  "version": "8.0.4",
   "description": "FerrLabs MCP servers â€” workspace root",
   "license": "MPL-2.0",
   "type": "module",

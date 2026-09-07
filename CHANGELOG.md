@@ -4,6 +4,12 @@ All notable changes to `mcp` will be documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [8.0.4] - 2026-09-07
+
+### Bug Fixes
+
+- fix(core): stop leaking credentials through baseUrl, redirects and shared token state (#331)
+
 ## [8.0.3] - 2026-09-05
 
 ### Bug Fixes
